@@ -2,7 +2,7 @@
   <div class="container">
     <div>
       <h1>カメラテスト</h1>
-      アップロード
+      アップロード(少し時間がかかります)
       <FileUploader @onImagePushed="onImagePushed" />
       または
       <video id="video" ref="video" width="100%" height="500" autoplay></video>
