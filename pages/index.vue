@@ -2,11 +2,14 @@
   <div class="container">
     <div>
       <h1>カメラテスト</h1>
+      アップロード
+      <FileUploader @onImagePushed="onImagePushed" />
+      または
       <video id="video" ref="video" width="100%" height="500" autoplay></video>
       <div>
         <button
           id="snap"
-          class="px-3 py-2 bg-blue-500 text-white"
+          class="px-4 py-2 bg-blue-500 text-white mt-3 rounded"
           @click="capture()"
         >
           Snap Photo
@@ -58,6 +61,10 @@ export default {
       }
     })
 
+    const onImagePushed = (imageData: string) => {
+      captures.value.unshift(imageData)
+    }
+
     /**
      * Canvasオブジェクト取得
      */
@@ -91,7 +98,7 @@ export default {
       )
       captures.value.unshift(canvas.value.toDataURL('image/jpeg'))
     }
-    return { capture, captures, height, width }
+    return { capture, captures, height, width, onImagePushed }
   },
 }
 </script>
