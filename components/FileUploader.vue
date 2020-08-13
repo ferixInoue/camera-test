@@ -1,6 +1,9 @@
 <template>
   <div>
+    <TheLoading v-if="isLoading" />
+    {{ file }}
     <input
+      :value="file"
       type="file"
       accept="image/*"
       class="border-gray-300 p-3"
@@ -14,7 +17,11 @@ export default defineComponent({
   name: '',
   setup(_props: {}, { emit }: SetupContext) {
     const imageData = ref('')
+    const isLoading = ref(false)
+    const file = ref<any>('')
     const onFileChange = (e: any) => {
+      console.log('fff')
+      isLoading.value = true
       const files = e.target.files
 
       if (files.length > 0) {
@@ -22,8 +29,10 @@ export default defineComponent({
         const reader = new FileReader()
         reader.onload = (e: any) => {
           imageData.value = e.target.result
+          isLoading.value = false
         }
         reader.readAsDataURL(file)
+        //
       }
     }
     watch(
@@ -36,6 +45,8 @@ export default defineComponent({
     return {
       onFileChange,
       imageData,
+      isLoading,
+      file,
     }
   },
 })
