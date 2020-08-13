@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <TheLoading v-if="isLoading" />
     <div>
       <h1 class="font-semibold text-3xl m-3">カメラテスト</h1>
       アップロード(Androidだと少し時間がかかります)
@@ -43,6 +44,7 @@ export default {
     const captures = ref<Array<string>>([])
     const width = ref(500)
     const height = ref(500)
+    const isLoading = ref(false)
     const ctx = ref<CanvasRenderingContext2D | null>(null)
 
     const constraints = {
@@ -80,6 +82,7 @@ export default {
     }
 
     const capture = () => {
+      isLoading.value = true
       if (!ctx.value) {
         canvas.value = getCanvas(
           'canvas',
@@ -97,8 +100,9 @@ export default {
         video.value.videoHeight
       )
       captures.value.unshift(canvas.value.toDataURL('image/jpeg'))
+      isLoading.value = false
     }
-    return { capture, captures, height, width, onImagePushed }
+    return { capture, captures, height, width, onImagePushed, isLoading }
   },
 }
 </script>
