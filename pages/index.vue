@@ -1,15 +1,15 @@
 <template>
   <div class="container">
     <div>
-      <h1>カメラテスト</h1>
-      アップロード(少し時間がかかります)
+      <h1 class="font-semibold text-3xl m-3">カメラテスト</h1>
+      アップロード(Androidだと少し時間がかかります)
       <FileUploader @onImagePushed="onImagePushed" />
-      または
+      <span class="inline-block my-4">または</span>
       <video id="video" ref="video" width="100%" height="500" autoplay></video>
       <div>
         <button
           id="snap"
-          class="px-4 py-2 bg-blue-500 text-white mt-3 rounded"
+          class="px-5 py-3 font-semibold bg-blue-500 text-white my-3 rounded"
           @click="capture()"
         >
           Snap Photo
@@ -47,7 +47,7 @@ export default {
 
     const constraints = {
       audio: false,
-      video: { facingMode: 'environment' },
+      video: { facingMode: 'environment' }, // アウトカメラを優先的に使う
     }
 
     onMounted(() => {

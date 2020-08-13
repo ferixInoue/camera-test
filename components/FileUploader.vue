@@ -1,6 +1,11 @@
 <template>
   <div>
-    <input type="file" accept="image/*" @change="onFileChange($event)" />
+    <input
+      type="file"
+      accept="image/*"
+      class="border-gray-300 p-3"
+      @change="onFileChange($event)"
+    />
   </div>
 </template>
 <script lang="ts">
