@@ -2,8 +2,8 @@
   <div class="container">
     <TheLoading v-if="isLoading" />
     <div>
-      <h1 class="font-semibold text-3xl m-3">カメラテスト</h1>
-      <nuxt-link to="socket">f</nuxt-link>
+      <h1 class="font-semibold text-3xl m-3 block">カメラテスト</h1>
+      <nuxt-link to="remote" class="m-4 font-bold block">操作画面へ</nuxt-link>
       アップロード(Androidだと少し時間がかかります)
       <FileUploader @onImagePushed="onImagePushed" />
       <span class="inline-block my-4">または</span>
@@ -38,8 +38,7 @@
 
 <script lang="ts">
 import { ref, onMounted } from '@vue/composition-api'
-
-import { useContext } from '@nuxtjs/composition-api'
+import { w3cwebsocket as W3CWebSocket } from 'websocket'
 export default {
   setup(_props: {}, context: any) {
     const video = ref<HTMLVideoElement>(document.createElement('video'))
@@ -49,7 +48,11 @@ export default {
     const height = ref(500)
     const isLoading = ref(false)
     const ctx = ref<CanvasRenderingContext2D | null>(null)
-
+    const socket = ref(
+      new W3CWebSocket(
+        'wss://t1l8i75fh8.execute-api.ap-northeast-1.amazonaws.com/dev'
+      )
+    )
     const constraints = {
       audio: false,
       video: { facingMode: 'environment' }, // アウトカメラを優先的に使う
@@ -63,6 +66,12 @@ export default {
           video.value.srcObject = stream
           video.value.play()
         })
+      }
+
+      socket.value.onmessage = function (e: any) {
+        if (typeof e.data === 'string') {
+          if (e.data === 'snap') capture()
+        }
       }
     })
 
@@ -133,6 +142,7 @@ h1 {
   justify-content: center;
   align-items: center;
   text-align: center;
+  flex-direction: column;
 }
 
 .title {
