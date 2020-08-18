@@ -65,12 +65,4 @@ module.exports = {
   build: {
     // vendor: ['socket.io-client'],
   },
-  // server: {
-  //   port: 3000,
-  //   host: '0.0.0.0',
-  //   https: {
-  //     key: fs.readFileSync(path.resolve(__dirname, 'localhost-key.pem')),
-  //     cert: fs.readFileSync(path.resolve(__dirname, 'localhost.pem')),
-  //   },
-  // },
 }
