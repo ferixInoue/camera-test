@@ -3,10 +3,10 @@
     <TheLoading v-if="isLoading" />
     <div>
       <h1 class="font-semibold text-3xl m-3">カメラテスト</h1>
-      <nuxt-link to="socket">f</nuxt-link>
-      アップロード(Androidだと少し時間がかかります)
-      <FileUploader @onImagePushed="onImagePushed" />
-      <span class="inline-block my-4">または</span>
+      <input v-model="message" type="text" /><button @click="onMessageSent">
+        send</button
+      ><br />
+      <div>{{ messages }}</div>
       <video id="video" ref="video" width="100%" height="500" autoplay></video>
       <div>
         <button
@@ -37,33 +37,65 @@
 </template>
 
 <script lang="ts">
+// import io from 'socket.io-client'
 import { ref, onMounted } from '@vue/composition-api'
 
-import { useContext } from '@nuxtjs/composition-api'
 export default {
-  setup(_props: {}, context: any) {
+  setup(_props: {}, { refs }: any) {
     const video = ref<HTMLVideoElement>(document.createElement('video'))
     const canvas = ref<HTMLCanvasElement>(document.createElement('canvas'))
     const captures = ref<Array<string>>([])
     const width = ref(500)
     const height = ref(500)
     const isLoading = ref(false)
+    const socket = ref<any>('')
     const ctx = ref<CanvasRenderingContext2D | null>(null)
+    const message = ref('')
+    const messages = ref<object[]>([])
 
+    const onMessageSent = () => {
+      message.value = ''
+      /* Emit events */
+
+      const now = new Date() // 現在時刻（世界標準時）を取得
+      now.setTime(now.getTime() + 1000 * 60 * 60 * 9) // 日本時間に変換
+      const _now = now.toJSON().split('T')[1].slice(0, 5) // 時刻のみを取得
+
+      // メッセージオブジェクトを作る
+      const _message = {
+        user: socket.value.id,
+        date: _now,
+        text: message.value.trim(),
+      }
+
+      // // 自身（Vueインスタンス）のデータオブジェクトにメッセージを追加する
+      // messages.value.push(_message)
+      // console.log(_message)
+      // // サーバー側にメッセージを送信する
+      // socket.value.emit('ev', _message)
+      // // input要素を空にする
+      message.value = ''
+    }
     const constraints = {
       audio: false,
       video: { facingMode: 'environment' }, // アウトカメラを優先的に使う
     }
 
     onMounted(() => {
-      video.value = context.refs.video
-
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia(constraints).then((stream: any) => {
-          video.value.srcObject = stream
-          video.value.play()
-        })
-      }
+      // socket.value = io()
+      // // サーバー側で保持しているメッセージを受信する
+      // socket.value.on('news', (message: any) => {
+      //   messages.value.push(message || {})
+      //   console.log(message)
+      // })
+      // video.value = refs.video
+      // if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      //   navigator.mediaDevices.getUserMedia(constraints).then((stream: any) => {
+      //     video.value.srcObject = stream
+      //     video.value.play()
+      //     // recorder.value = new MediaRecorder(stream)
+      //   })
+      // }
     })
 
     const onImagePushed = (imageData: string) => {
@@ -105,7 +137,17 @@ export default {
       captures.value.unshift(canvas.value.toDataURL('image/jpeg'))
       isLoading.value = false
     }
-    return { capture, captures, height, width, onImagePushed, isLoading }
+    return {
+      capture,
+      captures,
+      height,
+      width,
+      onImagePushed,
+      isLoading,
+      message,
+      messages,
+      onMessageSent,
+    }
   },
 }
 </script>

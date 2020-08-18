@@ -1,4 +1,7 @@
-export default {
+/* eslint-disable nuxt/no-cjs-in-config */
+const fs = require('fs')
+const path = require('path')
+module.exports = {
   /*
    ** Nuxt rendering mode
    ** See https://nuxtjs.org/api/configuration-mode
@@ -53,10 +56,21 @@ export default {
   /*
    ** Nuxt.js modules
    */
-  modules: ['@nuxtjs/pwa', 'vue-web-cam/nuxt'],
+  modules: ['@nuxtjs/pwa'],
+
   /*
    ** Build configuration
    ** See https://nuxtjs.org/api/configuration-build/
    */
-  build: {},
+  build: {
+    // vendor: ['socket.io-client'],
+  },
+  // server: {
+  //   port: 3000,
+  //   host: '0.0.0.0',
+  //   https: {
+  //     key: fs.readFileSync(path.resolve(__dirname, 'localhost-key.pem')),
+  //     cert: fs.readFileSync(path.resolve(__dirname, 'localhost.pem')),
+  //   },
+  // },
 }
