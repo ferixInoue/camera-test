@@ -8,7 +8,19 @@
       <FileUploader @onImagePushed="onImagePushed" />
       <span class="inline-block my-4">または</span>
       <video id="video" ref="video" width="100%" height="500" autoplay></video>
-      <div>
+      <div class="mt-4">
+        <label
+          class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4"
+          for="room-id"
+        >
+          紐付けID
+        </label>
+        <input
+          id="room-id"
+          v-model="roomId"
+          type="number"
+          class="bg-gray-200 appearance-none border-2 text-left border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+        />
         <button
           id="snap"
           class="px-5 py-3 font-semibold bg-blue-500 text-white my-3 rounded"
@@ -50,6 +62,7 @@ export default {
     const isLoading = ref(false)
     const ctx = ref<CanvasRenderingContext2D | null>(null)
     const message = ref('')
+    const roomId = ref<Number>(Math.floor(Math.random() * 20))
     const socket = new ReconnectingWebSocket(
       'wss://t1l8i75fh8.execute-api.ap-northeast-1.amazonaws.com/dev'
     )
@@ -72,7 +85,7 @@ export default {
       socket.onmessage = function (e: any) {
         console.log(e)
         if (typeof e.data === 'string') {
-          if (e.data === 'snap') capture()
+          if (Number(e.data) === roomId.value) capture()
         }
       }
     })
@@ -120,7 +133,7 @@ export default {
         message.value = ''
       }, 4000)
     }
-    return { capture, captures, onImagePushed, isLoading, message }
+    return { capture, captures, onImagePushed, isLoading, message, roomId }
   },
 }
 </script>
