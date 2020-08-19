@@ -62,7 +62,7 @@ export default {
     const isLoading = ref(false)
     const ctx = ref<CanvasRenderingContext2D | null>(null)
     const message = ref('')
-    const roomId = ref<Number>(Math.floor(Math.random() * 20))
+    const roomId = ref<Number>(Math.floor(Math.random() * 99))
     const socket = new ReconnectingWebSocket(
       'wss://t1l8i75fh8.execute-api.ap-northeast-1.amazonaws.com/dev'
     )
