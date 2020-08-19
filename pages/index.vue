@@ -17,6 +17,9 @@
           Snap Photo
         </button>
       </div>
+      <span class="inline-block">
+        {{ message }}
+      </span>
       <canvas id="canvas" ref="canvas"></canvas>
       <ul>
         <li
@@ -38,21 +41,19 @@
 
 <script lang="ts">
 import { ref, onMounted } from '@vue/composition-api'
-import { w3cwebsocket as W3CWebSocket } from 'websocket'
+import ReconnectingWebSocket from 'reconnecting-websocket'
 export default {
   setup(_props: {}, context: any) {
     const video = ref<HTMLVideoElement>(document.createElement('video'))
     const canvas = ref<HTMLCanvasElement>(document.createElement('canvas'))
     const captures = ref<Array<string>>([])
-    const width = ref(500)
-    const height = ref(500)
     const isLoading = ref(false)
     const ctx = ref<CanvasRenderingContext2D | null>(null)
-    const socket = ref(
-      new W3CWebSocket(
-        'wss://t1l8i75fh8.execute-api.ap-northeast-1.amazonaws.com/dev'
-      )
+    const message = ref('')
+    const socket = new ReconnectingWebSocket(
+      'wss://t1l8i75fh8.execute-api.ap-northeast-1.amazonaws.com/dev'
     )
+
     const constraints = {
       audio: false,
       video: { facingMode: 'environment' }, // アウトカメラを優先的に使う
@@ -68,7 +69,8 @@ export default {
         })
       }
 
-      socket.value.onmessage = function (e: any) {
+      socket.onmessage = function (e: any) {
+        console.log(e)
         if (typeof e.data === 'string') {
           if (e.data === 'snap') capture()
         }
@@ -113,8 +115,12 @@ export default {
       )
       captures.value.unshift(canvas.value.toDataURL('image/jpeg'))
       isLoading.value = false
+      message.value = '撮影しました'
+      setTimeout(() => {
+        message.value = ''
+      }, 4000)
     }
-    return { capture, captures, height, width, onImagePushed, isLoading }
+    return { capture, captures, onImagePushed, isLoading, message }
   },
 }
 </script>

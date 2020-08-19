@@ -12,28 +12,24 @@
 </template>
 <script lang="ts">
 import { ref, onMounted } from '@vue/composition-api'
-import { w3cwebsocket as W3CWebSocket } from 'websocket'
-
+import ReconnectingWebSocket from 'reconnecting-websocket'
 export default {
   name: '',
   setup() {
-    const socket = ref(
-      new W3CWebSocket(
-        'wss://t1l8i75fh8.execute-api.ap-northeast-1.amazonaws.com/dev'
-      )
+    const socket = new ReconnectingWebSocket(
+      'wss://t1l8i75fh8.execute-api.ap-northeast-1.amazonaws.com/dev'
     )
+
     const message = ref('')
     onMounted(() => {
-      socket.value.onmessage = function (e: any) {
+      socket.onmessage = function (e: any) {
         if (typeof e.data === 'string') {
           console.log(e.data)
         }
       }
     })
     const onPushed = function () {
-      socket.value.send(
-        JSON.stringify({ message: 'sendmessage', data: 'snap' })
-      )
+      socket.send(JSON.stringify({ message: 'sendmessage', data: 'snap' }))
       message.value = '撮影しました'
       setTimeout(() => {
         message.value = ''
