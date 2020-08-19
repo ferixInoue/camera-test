@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "nuxt-ts",
-    "dev2": "nodemon server/index.js --watch server",
     "build": "nuxt-ts build",
     "start": "nuxt-ts start",
     "generate": "nuxt-ts generate",
