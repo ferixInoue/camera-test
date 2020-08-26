@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <TheLoading v-if="isLoading" />
+    <MqttWebsock :param="param" />
     <div>
       <h1 class="font-semibold text-3xl m-3 block">カメラテスト</h1>
       <nuxt-link to="remote" class="m-4 font-bold block">操作画面へ</nuxt-link>
@@ -55,6 +56,7 @@
 import { ref, onMounted } from '@vue/composition-api'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 export default {
+  name: 'Index',
   setup(_props: {}, context: any) {
     const video = ref<HTMLVideoElement>(document.createElement('video'))
     const canvas = ref<HTMLCanvasElement>(document.createElement('canvas'))
@@ -63,15 +65,21 @@ export default {
     const ctx = ref<CanvasRenderingContext2D | null>(null)
     const message = ref('')
     const roomId = ref<Number>(Math.floor(Math.random() * 99))
-    const socket = new ReconnectingWebSocket(
-      'wss://t1l8i75fh8.execute-api.ap-northeast-1.amazonaws.com/dev'
-    )
+
+    const param = ref('')
 
     const constraints = {
       audio: false,
       video: { facingMode: 'environment' }, // アウトカメラを優先的に使う
     }
+    const send = () => {
+      if (captures.value.length === 0) return
 
+      const _param = JSON.stringify({
+        data: { image: captures.value[0] },
+      })
+      if (_param !== param.value) param.value = _param
+    }
     onMounted(() => {
       video.value = context.refs.video
 
@@ -80,13 +88,6 @@ export default {
           video.value.srcObject = stream
           video.value.play()
         })
-      }
-
-      socket.onmessage = function (e: any) {
-        console.log(e)
-        if (typeof e.data === 'string') {
-          if (Number(e.data) === roomId.value) capture()
-        }
       }
     })
 
@@ -129,11 +130,21 @@ export default {
       captures.value.unshift(canvas.value.toDataURL('image/jpeg'))
       isLoading.value = false
       message.value = '撮影しました'
+      send()
       setTimeout(() => {
         message.value = ''
       }, 4000)
     }
-    return { capture, captures, onImagePushed, isLoading, message, roomId }
+    return {
+      capture,
+      captures,
+      onImagePushed,
+      isLoading,
+      message,
+      roomId,
+      send,
+      param,
+    }
   },
 }
 </script>
