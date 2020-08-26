@@ -97,7 +97,7 @@ export default {
       if (captures.value.length === 0) return
 
       const _param = JSON.stringify({
-        data: { image: captures.value[0] },
+        data: { roomId: roomId.value, image: captures.value[0] },
       })
       if (_param !== param.value) param.value = _param
     }
