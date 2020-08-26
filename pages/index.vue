@@ -4,12 +4,7 @@
     <MqttWebsock :param="param" />
     <div>
       <h1 class="font-semibold text-3xl m-3 block">カメラテスト</h1>
-      <nuxt-link to="remote" class="m-4 font-bold block">操作画面へ</nuxt-link>
-
-      <nuxt-link to="upload">アップロード</nuxt-link>
-      <span class="inline-block my-4">または</span>
-      <video id="video" ref="video" width="100%" height="500" autoplay></video>
-      <div class="mt-4">
+      <div>
         <label
           class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4"
           for="room-id"
@@ -22,13 +17,39 @@
           type="number"
           class="bg-gray-200 appearance-none border-2 text-left border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
         />
+      </div>
+      <span
+        v-if="isCameraMode"
+        class="cursor-pointer font-semibold text-gray-600"
+        @click="toggleMode"
+      >
+        アップロードへ
+      </span>
+      <span
+        v-else
+        class="cursor-pointer font-semibold text-gray-600"
+        @click="toggleMode"
+      >
+        カメラへ
+      </span>
+      <div v-show="isCameraMode" class="mt-4 flex flex-col">
+        <video
+          id="video"
+          ref="video"
+          width="100%"
+          height="500"
+          autoplay
+        ></video>
         <button
           id="snap"
-          class="px-5 py-3 font-semibold bg-blue-500 text-white my-3 rounded"
+          class="transition duration-700 focus:outline-none hover:bg-blue-200 px-5 py-3 font-semibold bg-blue-500 text-white my-3 rounded"
           @click="capture()"
         >
           Snap Photo
         </button>
+      </div>
+      <div v-show="!isCameraMode" class="mt-4 flex flex-col">
+        <FileUploader @onImagePushed="onImagePushed" />
       </div>
       <span class="inline-block">
         {{ message }}
@@ -41,11 +62,6 @@
           class="capture flex flex-col items-center"
         >
           <img :src="c" />
-          Base64 Encoded:
-          <textarea
-            :value="c"
-            style="width: 400px; height: 100px; resize: both;"
-          ></textarea>
         </li>
       </ul>
     </div>
@@ -67,6 +83,11 @@ export default {
     const roomId = ref<Number>(Math.floor(Math.random() * 99))
 
     const param = ref('')
+
+    const isCameraMode = ref(true)
+    const toggleMode = () => {
+      isCameraMode.value = !isCameraMode.value
+    }
 
     const constraints = {
       audio: false,
@@ -93,6 +114,7 @@ export default {
 
     const onImagePushed = (imageData: string) => {
       captures.value.unshift(imageData)
+      send()
     }
 
     /**
@@ -144,6 +166,8 @@ export default {
       roomId,
       send,
       param,
+      toggleMode,
+      isCameraMode,
     }
   },
 }
