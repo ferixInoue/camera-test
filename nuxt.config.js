@@ -1,6 +1,5 @@
 /* eslint-disable nuxt/no-cjs-in-config */
-const fs = require('fs')
-const path = require('path')
+require('dotenv').config()
 module.exports = {
   /*
    ** Nuxt rendering mode
