@@ -5,8 +5,8 @@
     <div>
       <h1 class="font-semibold text-3xl m-3 block">カメラテスト</h1>
       <nuxt-link to="remote" class="m-4 font-bold block">操作画面へ</nuxt-link>
-      アップロード(Androidだと少し時間がかかります)
-      <FileUploader @onImagePushed="onImagePushed" />
+
+      <nuxt-link to="upload">アップロード</nuxt-link>
       <span class="inline-block my-4">または</span>
       <video id="video" ref="video" width="100%" height="500" autoplay></video>
       <div class="mt-4">
