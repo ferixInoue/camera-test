@@ -2,7 +2,7 @@
   <div></div>
 </template>
 <script>
-import { ref, watch, onMounted, defineComponent } from '@vue/composition-api'
+import { watch, onMounted, defineComponent } from '@vue/composition-api'
 import CryptoJS from 'crypto-js'
 import moment from 'moment'
 import Paho from 'paho-mqtt'
@@ -124,28 +124,7 @@ function getEndpoint(regionName, awsIotEndpoint, done) {
     done(null, wssEndpoint)
   })
 }
-const data = {
-  messages: [],
-}
-let client
-
-function subscribe() {
-  client.subscribe(topic)
-  console.log('subscribed')
-}
-
-function send(content) {
-  const message = new Paho.Message(content)
-  message.destinationName = topic
-  client.send(message)
-  console.log('sent')
-}
-
-function onMessage(message) {
-  data.messages.push(message.payloadString)
-  console.log('message received: ' + message.payloadString)
-}
-
+// このファイルだけJavaScriptです
 export default defineComponent({
   name: '',
   props: {
@@ -156,14 +135,32 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const topic = 'Metadata_MQTT'
+    let client
+    const subscribe = () => {
+      client.subscribe(topic)
+      console.log('subscribed')
+    }
+    function send(content) {
+      const message = new Paho.Message(content)
+      message.destinationName = topic
+      client.send(message)
+      console.log('sent')
+    }
+    function onMessage(message) {
+      console.log('message received: ' + message.payloadString)
+    }
     watch(
       () => props.param,
       () => {
         send(props.param)
       }
     )
+
     onMounted(() => {
-      console.log(process.env.TEST)
+      intialize()
+    })
+    const intialize = () => {
       getEndpoint(region, endpoint, function (err, endpoint) {
         if (err) {
           console.log('failed', err)
@@ -180,25 +177,13 @@ export default defineComponent({
         client.connect(connectOptions)
         client.onMessageArrived = onMessage
         client.onConnectionLost = function (e) {
+          console.log('connect lost')
           console.log(e)
+          intialize()
         }
       })
-      // const awsIot = require('aws-iot-device-sdk')
-    })
-
-    const onPushed = () => {
-      send('ggjgjgjgj')
     }
-    return { onPushed }
-  },
-  head() {
-    return {
-      script: [
-        {
-          src: 'https://sdk.amazonaws.com/js/aws-sdk-2.283.1.min.js',
-        },
-      ],
-    }
+    return {}
   },
 })
 </script>

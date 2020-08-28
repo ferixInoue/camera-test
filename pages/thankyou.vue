@@ -14,7 +14,6 @@
   </div>
 </template>
 <script lang="ts">
-import { ref } from '@vue/composition-api'
 export default {
   name: '',
   setup() {
