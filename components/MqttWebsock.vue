@@ -32,11 +32,9 @@ SigV4Utils.getSignatureKey = function (
   return kSigning
 }
 const AWS = require('aws-sdk')
-const endpoint = 'a33gwsfkv1if9q-ats.iot.ap-northeast-1.amazonaws.com'
-const clientId = 'client_id'
-const topic = 'Metadata_MQTT'
-const poolId = 'ap-northeast-1:b83b2f7a-d9c2-4159-bd94-c3690691304d'
-const region = 'ap-northeast-1'
+const endpoint = process.env.END_POINT
+const poolId = process.env.POOL_ID
+const region = process.env.REGION
 
 function getCredentials(done) {
   AWS.config.region = region
