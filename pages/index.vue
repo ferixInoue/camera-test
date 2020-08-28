@@ -1,23 +1,24 @@
 <template>
   <div class="container">
-    <TheLoading v-if="isLoading" />
     <MqttWebsock :param="param" />
     <div>
       <h1 class="font-semibold text-3xl m-3 block">カメラテスト</h1>
+      <!--
       <div>
         <label
           class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4"
-          for="room-id"
+          for="topic"
         >
-          紐付けID
+          トピック
         </label>
         <input
-          id="room-id"
-          v-model="roomId"
-          type="number"
+          id="topic"
+          ref="topicInput"
+          type="text"
           class="bg-gray-200 appearance-none border-2 text-left border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
         />
-      </div>
+        <button @click="onPushed">変更</button>
+      </div> -->
       <span
         v-if="isCameraMode"
         class="cursor-pointer font-semibold text-gray-600"
@@ -45,31 +46,47 @@
           class="transition duration-700 focus:outline-none hover:bg-blue-200 px-5 py-3 font-semibold bg-blue-500 text-white my-3 rounded"
           @click="capture()"
         >
-          Snap Photo
+          {{snapShotMessage}}
+        </button>
+        <button
+          id="snap"
+          v-show="captures.length > 0"
+          class="transition duration-700 focus:outline-none hover:bg-blue-200 px-5 py-3 font-semibold bg-blue-500 text-white my-3 rounded"
+          @click="send()"
+        >
+          送信する
         </button>
       </div>
       <div v-show="!isCameraMode" class="mt-4 flex flex-col">
         <FileUploader @onImagePushed="onImagePushed" />
+                <button
+          id="snap"
+          v-show="isUploaded"
+          class="transition duration-700 focus:outline-none hover:bg-blue-200 px-5 py-3 font-semibold bg-blue-500 text-white my-3 rounded"
+          @click="send()"
+        >
+          送信する
+        </button>
       </div>
       <span class="inline-block">
         {{ message }}
       </span>
       <canvas id="canvas" ref="canvas"></canvas>
-      <ul>
-        <li
-          v-for="c in captures"
-          :key="c.d"
-          class="capture flex flex-col items-center"
+      <div v-if="captures.length > 0 ">
+              <label
+          class="block text-gray-500 font-bold text-left mb-1 md:mb-0 pr-4"
+          for="upload"
         >
-          <img :src="c" />
-        </li>
-      </ul>
+          送信する画像
+        </label>
+      <img id="upload" :src="captures[0]" />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { ref, onMounted } from '@vue/composition-api'
+import { ref, onMounted, computed, SetupContext } from '@vue/composition-api'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 export default {
   name: 'Index',
@@ -82,26 +99,38 @@ export default {
     const message = ref('')
     const roomId = ref<Number>(Math.floor(Math.random() * 99))
 
+    const topic = ref<string>('Metadata_MQTT')
+    const isUploaded = ref(false)
     const param = ref('')
 
     const isCameraMode = ref(true)
     const toggleMode = () => {
       isCameraMode.value = !isCameraMode.value
     }
-
+    const onPushed = () => {
+      // topic.value = context.refs.topicInput.value
+    }
     const constraints = {
       audio: false,
       video: { facingMode: 'environment' }, // アウトカメラを優先的に使う
     }
+
+    const snapShotMessage = computed(()=>{
+      if (captures.value.length > 0) return "もう一度撮影する"
+      return "撮影"
+    })
     const send = () => {
       if (captures.value.length === 0) return
 
       const _param = JSON.stringify({
-        data: { roomId: roomId.value, image: captures.value[0] },
+        data: { image: captures.value[0] },
       })
+      console.log(topic.value)
       if (_param !== param.value) param.value = _param
+      context.root.$router.push("/thankyou")
     }
     onMounted(() => {
+      // context.refs.topicInput.value = topic.value
       video.value = context.refs.video
 
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -114,7 +143,7 @@ export default {
 
     const onImagePushed = (imageData: string) => {
       captures.value.unshift(imageData)
-      send()
+      isUploaded.value=true
     }
 
     /**
@@ -152,7 +181,6 @@ export default {
       captures.value.unshift(canvas.value.toDataURL('image/jpeg'))
       isLoading.value = false
       message.value = '撮影しました'
-      send()
       setTimeout(() => {
         message.value = ''
       }, 4000)
@@ -162,12 +190,16 @@ export default {
       captures,
       onImagePushed,
       isLoading,
+      onPushed,
       message,
+      snapShotMessage,
       roomId,
       send,
       param,
       toggleMode,
       isCameraMode,
+
+      isUploaded
     }
   },
 }
