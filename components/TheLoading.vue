@@ -26,15 +26,6 @@
     </div>
   </div>
 </template>
-<script lang="ts">
-import { ref } from '@vue/composition-api'
-export default {
-  name: '',
-  setup() {
-    return {}
-  },
-}
-</script>
 <style>
 .loader-dots div {
   animation-timing-function: cubic-bezier(0, 1, 1, 0);

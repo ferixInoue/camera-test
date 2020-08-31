@@ -46,11 +46,11 @@
           class="transition duration-700 focus:outline-none hover:bg-blue-200 px-5 py-3 font-semibold bg-blue-500 text-white my-3 rounded"
           @click="capture()"
         >
-          {{snapShotMessage}}
+          {{ snapShotMessage }}
         </button>
         <button
-          id="snap"
           v-show="captures.length > 0"
+          id="snap"
           class="transition duration-700 focus:outline-none hover:bg-blue-200 px-5 py-3 font-semibold bg-blue-500 text-white my-3 rounded"
           @click="send()"
         >
@@ -59,9 +59,9 @@
       </div>
       <div v-show="!isCameraMode" class="mt-4 flex flex-col">
         <FileUploader @onImagePushed="onImagePushed" />
-                <button
-          id="snap"
+        <button
           v-show="isUploaded"
+          id="snap"
           class="transition duration-700 focus:outline-none hover:bg-blue-200 px-5 py-3 font-semibold bg-blue-500 text-white my-3 rounded"
           @click="send()"
         >
@@ -72,22 +72,21 @@
         {{ message }}
       </span>
       <canvas id="canvas" ref="canvas"></canvas>
-      <div v-if="captures.length > 0 ">
-              <label
+      <div v-if="captures.length > 0">
+        <label
           class="block text-gray-500 font-bold text-left mb-1 md:mb-0 pr-4"
           for="upload"
         >
           送信する画像
         </label>
-      <img id="upload" :src="captures[0]" />
+        <img id="upload" :src="captures[0]" />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { ref, onMounted, computed, SetupContext } from '@vue/composition-api'
-import ReconnectingWebSocket from 'reconnecting-websocket'
+import { ref, onMounted, computed } from '@vue/composition-api'
 export default {
   name: 'Index',
   setup(_props: {}, context: any) {
@@ -107,17 +106,14 @@ export default {
     const toggleMode = () => {
       isCameraMode.value = !isCameraMode.value
     }
-    const onPushed = () => {
-      // topic.value = context.refs.topicInput.value
-    }
     const constraints = {
       audio: false,
       video: { facingMode: 'environment' }, // アウトカメラを優先的に使う
     }
 
-    const snapShotMessage = computed(()=>{
-      if (captures.value.length > 0) return "もう一度撮影する"
-      return "撮影"
+    const snapShotMessage = computed(() => {
+      if (captures.value.length > 0) return 'もう一度撮影する'
+      return '撮影'
     })
     const send = () => {
       if (captures.value.length === 0) return
@@ -127,10 +123,9 @@ export default {
       })
       console.log(topic.value)
       if (_param !== param.value) param.value = _param
-      context.root.$router.push("/thankyou")
+      context.root.$router.push('/thankyou')
     }
     onMounted(() => {
-      // context.refs.topicInput.value = topic.value
       video.value = context.refs.video
 
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -143,12 +138,9 @@ export default {
 
     const onImagePushed = (imageData: string) => {
       captures.value.unshift(imageData)
-      isUploaded.value=true
+      isUploaded.value = true
     }
 
-    /**
-     * Canvasオブジェクト取得
-     */
     const getCanvas = (
       canvasId: string,
       width: number,
@@ -190,7 +182,6 @@ export default {
       captures,
       onImagePushed,
       isLoading,
-      onPushed,
       message,
       snapShotMessage,
       roomId,
@@ -199,7 +190,7 @@ export default {
       toggleMode,
       isCameraMode,
 
-      isUploaded
+      isUploaded,
     }
   },
 }

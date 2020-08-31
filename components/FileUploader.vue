@@ -20,7 +20,6 @@ export default defineComponent({
     const isLoading = ref(false)
     const file = ref<any>('')
     const onFileChange = (e: any) => {
-      console.log('fff')
       isLoading.value = true
       const files = e.target.files
 
