@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <MqttWebsock :param="param" />
+    <!-- <MqttWebsock :param="param" /> -->
     <div>
       <h1 class="font-semibold text-3xl m-3 block">カメラテスト</h1>
       <!--
@@ -87,6 +87,7 @@
 
 <script lang="ts">
 import { ref, onMounted, computed } from '@vue/composition-api'
+import axios from 'axios'
 export default {
   name: 'Index',
   setup(_props: {}, context: any) {
@@ -115,15 +116,25 @@ export default {
       if (captures.value.length > 0) return 'もう一度撮影する'
       return '撮影'
     })
-    const send = () => {
+    const send = async () => {
       if (captures.value.length === 0) return
 
-      const _param = JSON.stringify({
-        data: { image: captures.value[0] },
-      })
-      console.log(topic.value)
-      if (_param !== param.value) param.value = _param
-      context.root.$router.push('/thankyou')
+      // const _param = JSON.stringify({
+      //   data: { image: captures.value[0] },
+      // })
+      // console.log(topic.value)
+      // if (_param !== param.value) param.value = _param
+
+      const data = { data: { image: captures.value[0] } }
+      try {
+        await axios.post(
+          'https://getaijawdl.execute-api.ap-northeast-1.amazonaws.com/dev/image',
+          data
+        )
+        context.root.$router.push('/thankyou')
+      } catch (e) {
+        alert(`${e.message}`)
+      }
     }
     onMounted(() => {
       video.value = context.refs.video
