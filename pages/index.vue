@@ -1,24 +1,7 @@
 <template>
   <div class="container">
-    <!-- <MqttWebsock :param="param" /> -->
     <div>
       <h1 class="font-semibold text-3xl m-3 block">カメラテスト</h1>
-      <!--
-      <div>
-        <label
-          class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4"
-          for="topic"
-        >
-          トピック
-        </label>
-        <input
-          id="topic"
-          ref="topicInput"
-          type="text"
-          class="bg-gray-200 appearance-none border-2 text-left border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-        />
-        <button @click="onPushed">変更</button>
-      </div> -->
       <span
         v-if="isCameraMode"
         class="cursor-pointer font-semibold text-gray-600"
@@ -97,9 +80,6 @@ export default {
     const isLoading = ref(false)
     const ctx = ref<CanvasRenderingContext2D | null>(null)
     const message = ref('')
-    const roomId = ref<Number>(Math.floor(Math.random() * 99))
-
-    const topic = ref<string>('Metadata_MQTT')
     const isUploaded = ref(false)
     const param = ref('')
 
@@ -118,12 +98,6 @@ export default {
     })
     const send = async () => {
       if (captures.value.length === 0) return
-
-      // const _param = JSON.stringify({
-      //   data: { image: captures.value[0] },
-      // })
-      // console.log(topic.value)
-      // if (_param !== param.value) param.value = _param
 
       const data = { data: { image: captures.value[0] } }
       try {
@@ -195,12 +169,10 @@ export default {
       isLoading,
       message,
       snapShotMessage,
-      roomId,
       send,
       param,
       toggleMode,
       isCameraMode,
-
       isUploaded,
     }
   },
